@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     CategoryListView, ProductListView, ProductDetailView,
     ProductCreateView, ProductUpdateDeleteView, MyProductsView,
-    ReviewCreateView, ReviewListView, WishlistView, WishlistToggleView,
+    ReviewCreateView, ReviewListView, WishlistView, WishlistToggleView,ProductDownloadView,
 )
 
 urlpatterns = [
@@ -16,4 +16,5 @@ urlpatterns = [
     path('categories/',                CategoryListView.as_view(),       name='category-list'),
     path('wishlist/',                  WishlistView.as_view(),           name='wishlist'),
     path('<int:product_id>/wishlist/', WishlistToggleView.as_view(),     name='wishlist-toggle'),
+    path('<int:pk>/download/',         ProductDownloadView.as_view(),    name='product-download'),
 ]

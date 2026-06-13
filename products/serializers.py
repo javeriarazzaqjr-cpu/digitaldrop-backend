@@ -72,8 +72,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model  = Product
         fields = ('name', 'description', 'category', 'price', 'old_price',
-                  'emoji', 'badge', 'tags', 'includes')
-
+                  'emoji', 'badge', 'tags', 'includes', 'file')
     def create(self, validated_data):
         includes_data = validated_data.pop('includes', [])
         product = Product.objects.create(**validated_data)

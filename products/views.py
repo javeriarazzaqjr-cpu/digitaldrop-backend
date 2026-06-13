@@ -3,14 +3,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
-
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from .models import Category, Product, Review, Wishlist
 from .serializers import (
     CategorySerializer, ProductListSerializer, ProductDetailSerializer,
     ProductCreateSerializer, ReviewSerializer, WishlistSerializer
 )
 from .filters import ProductFilter
-
+from django.http import FileResponse
+from orders.models import OrderItem
 
 class CategoryListView(generics.ListAPIView):
     queryset           = Category.objects.all()
@@ -38,10 +39,10 @@ class ProductDetailView(generics.RetrieveAPIView):
     def get_queryset(self):
         return Product.objects.filter(is_active=True).select_related('seller', 'category').prefetch_related('reviews', 'includes')
 
-
 class ProductCreateView(generics.CreateAPIView):
     serializer_class   = ProductCreateSerializer
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes     = [MultiPartParser, FormParser, JSONParser]
 
     def perform_create(self, serializer):
         serializer.save(seller=self.request.user)
@@ -102,3 +103,25 @@ class WishlistToggleView(APIView):
             obj.delete()
             return Response({'wishlisted': False})
         return Response({'wishlisted': True}, status=status.HTTP_201_CREATED)
+    
+
+class ProductDownloadView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+
+        has_purchased = OrderItem.objects.filter(
+            product=product,
+            order__buyer=request.user,
+            order__status='completed'
+        ).exists()
+
+        if not has_purchased:
+            return Response({'detail': 'You have not purchased this product.'}, status=status.HTTP_403_FORBIDDEN)
+
+        if not product.file:
+            return Response({'detail': 'No file available for this product yet.'}, status=status.HTTP_404_NOT_FOUND)
+
+        filename = product.file.name.split('/')[-1]
+        return FileResponse(product.file.open('rb'), as_attachment=True, filename=filename)
