@@ -7,9 +7,8 @@ class BlogPostListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model  = BlogPost
-        fields = ('id', 'title', 'slug', 'category', 'emoji',
+        fields = ('id', 'title', 'slug', 'category', 'emoji', 'image_url',
                   'excerpt', 'author_name', 'read_time', 'published_at')
-
 
 class BlogPostDetailSerializer(BlogPostListSerializer):
     class Meta(BlogPostListSerializer.Meta):

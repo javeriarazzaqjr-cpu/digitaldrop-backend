@@ -7,6 +7,7 @@ class BlogPost(models.Model):
     slug         = models.SlugField(unique=True, max_length=300)
     category     = models.CharField(max_length=80)
     emoji        = models.CharField(max_length=10, blank=True)
+    image_url    = models.URLField(blank=True)
     excerpt      = models.TextField()
     content      = models.TextField()
     author       = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
