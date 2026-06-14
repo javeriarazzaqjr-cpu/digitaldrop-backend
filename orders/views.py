@@ -51,6 +51,13 @@ class CheckoutView(APIView):
         order = s.create_order(request.user, cart_items)
         cart_items.delete()
 
+        # Send emails
+        from core.emails import send_order_confirmation, send_seller_sale_notification
+        send_order_confirmation(order)
+        for item in order.items.all():
+            if item.seller:
+                send_seller_sale_notification(item.seller, order, item)
+
         return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
 
 

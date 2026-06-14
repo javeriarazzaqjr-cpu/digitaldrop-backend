@@ -2,6 +2,7 @@ from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from core.emails import send_welcome_email
 
 from .models import User
 from .serializers import (
@@ -17,6 +18,7 @@ class RegisterView(APIView):
         s = RegisterSerializer(data=request.data)
         s.is_valid(raise_exception=True)
         user = s.save()
+        send_welcome_email(user)  # ← add this line
         tokens = get_tokens_for_user(user)
         return Response({
             'user':   UserSerializer(user).data,
