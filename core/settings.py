@@ -132,3 +132,5 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL  = config('EMAIL_HOST_USER', default='noreply@digitaldrop.com')
 
 RESEND_API_KEY = config('RESEND_API_KEY', default='')
+
+BREVO_API_KEY = config('BREVO_API_KEY', default='')
