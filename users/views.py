@@ -84,7 +84,7 @@ class PasswordResetRequestView(APIView):
             user = User.objects.get(email=email)
             uid   = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
-            reset_link = f'http://localhost:3000/dp.html?reset_uid={uid}&reset_token={token}'
+            reset_link = f'http://localhost:3000/dp.html#reset_uid={uid}&reset_token={token}'
             send_password_reset_email(user, reset_link)
         except User.DoesNotExist:
             pass
