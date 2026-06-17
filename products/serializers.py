@@ -43,7 +43,7 @@ class ProductListSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'name', 'description', 'price', 'old_price',
             'category_name', 'seller_name', 'seller_id',
-            'emoji', 'badge', 'tags',
+            'emoji', 'badge', 'tags', 'image',
             'avg_rating', 'review_count', 'discount_percent',
             'sales_count', 'is_active', 'created_at', 'is_wishlisted',
         )
@@ -72,7 +72,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model  = Product
         fields = ('name', 'description', 'category', 'price', 'old_price',
-                  'emoji', 'badge', 'tags', 'includes', 'file')
+                  'emoji', 'badge', 'tags', 'includes', 'file', 'image')
     def create(self, validated_data):
         includes_data = validated_data.pop('includes', [])
         product = Product.objects.create(**validated_data)

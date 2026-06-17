@@ -30,6 +30,7 @@ class Product(models.Model):
     old_price   = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     emoji       = models.CharField(max_length=10, default='📦')
     file        = models.FileField(upload_to='products/', blank=True, null=True)
+    image       = models.ImageField(upload_to='product_images/', blank=True, null=True)
     badge = models.CharField(max_length=20, choices=BADGE_CHOICES, blank=True, default='')
     tags        = models.CharField(max_length=300, blank=True)
     sales_count = models.PositiveIntegerField(default=0)
