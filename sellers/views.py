@@ -46,17 +46,31 @@ class SellerDashboardView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
+        from django.utils import timezone
+        from datetime import timedelta
+
         user          = request.user
         products      = Product.objects.filter(seller=user)
         order_items   = OrderItem.objects.filter(seller=user)
         total_revenue = order_items.aggregate(total=Sum('product_price'))['total'] or 0
         total_sales   = order_items.count()
+
+        cutoff = timezone.now() - timedelta(days=7)
+        pending_revenue = order_items.filter(
+            order__created_at__gte=cutoff
+        ).aggregate(total=Sum('product_price'))['total'] or 0
+        withdrawable_revenue = order_items.filter(
+            order__created_at__lt=cutoff
+        ).aggregate(total=Sum('product_price'))['total'] or 0
+
         recent_orders = Order.objects.filter(
             items__seller=user
         ).distinct().order_by('-created_at')[:5]
         return Response({
-            'total_revenue': float(total_revenue),
-            'total_sales':   total_sales,
-            'product_count': products.count(),
-            'recent_orders': OrderSerializer(recent_orders, many=True).data,
+            'total_revenue':        float(total_revenue),
+            'pending_revenue':      float(pending_revenue),
+            'withdrawable_revenue': float(withdrawable_revenue),
+            'total_sales':          total_sales,
+            'product_count':        products.count(),
+            'recent_orders':        OrderSerializer(recent_orders, many=True).data,
         })
