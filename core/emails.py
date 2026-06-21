@@ -90,3 +90,19 @@ def send_password_reset_email(user, reset_link):
         <p>— The DigitalDrop Team</p>
         """
     )
+
+
+def send_review_notification(seller, product, review):
+    send_email(
+        seller.email, seller.first_name,
+        f"⭐ New review on {product.name}",
+        f"""
+        <h2>You got a new review! ⭐</h2>
+        <p>Hi {seller.first_name},</p>
+        <p><strong>Product:</strong> {product.name}</p>
+        <p><strong>Rating:</strong> {'⭐' * review.rating}</p>
+        <p><strong>Review:</strong> "{review.text}"</p>
+        <p><a href="https://web-production-ecb5.up.railway.app">View on DigitalDrop →</a></p>
+        <p>— The DigitalDrop Team</p>
+        """
+    )

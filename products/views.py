@@ -76,7 +76,11 @@ class ReviewCreateView(APIView):
             return Response({'detail': 'You have already reviewed this product.'}, status=status.HTTP_400_BAD_REQUEST)
         s = ReviewSerializer(data=request.data)
         s.is_valid(raise_exception=True)
-        s.save(product=product, author=request.user)
+        review = s.save(product=product, author=request.user)
+
+        from core.emails import send_review_notification
+        send_review_notification(product.seller, product, review)
+
         return Response(s.data, status=status.HTTP_201_CREATED)
 
 
