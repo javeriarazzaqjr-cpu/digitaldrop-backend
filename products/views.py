@@ -1,3 +1,4 @@
+from django.db import models
 from rest_framework import generics, permissions, status, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -9,6 +10,7 @@ from .serializers import (
     CategorySerializer, ProductListSerializer, ProductDetailSerializer,
     ProductCreateSerializer, ReviewSerializer, WishlistSerializer
 )
+
 from .filters import ProductFilter
 from django.http import FileResponse
 from orders.models import OrderItem
@@ -38,6 +40,13 @@ class ProductDetailView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         return Product.objects.filter(is_active=True).select_related('seller', 'category').prefetch_related('reviews', 'includes')
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        Product.objects.filter(pk=instance.pk).update(view_count=models.F('view_count') + 1)
+        instance.refresh_from_db()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
 class ProductCreateView(generics.CreateAPIView):
     serializer_class   = ProductCreateSerializer

@@ -63,6 +63,21 @@ class SellerDashboardView(APIView):
             order__created_at__lt=cutoff
         ).aggregate(total=Sum('product_price'))['total'] or 0
 
+        total_views = products.aggregate(total=Sum('view_count'))['total'] or 0
+        conversion_rate = round((total_sales / total_views) * 100, 1) if total_views > 0 else 0
+
+        top_products = products.order_by('-sales_count')[:5]
+        top_products_data = [
+            {
+                'id': p.id,
+                'name': p.name,
+                'sales_count': p.sales_count,
+                'view_count': p.view_count,
+                'revenue': float(p.price) * p.sales_count,
+            }
+            for p in top_products
+        ]
+
         recent_orders = Order.objects.filter(
             items__seller=user
         ).distinct().order_by('-created_at')[:5]
@@ -72,5 +87,8 @@ class SellerDashboardView(APIView):
             'withdrawable_revenue': float(withdrawable_revenue),
             'total_sales':          total_sales,
             'product_count':        products.count(),
+            'total_views':          total_views,
+            'conversion_rate':      conversion_rate,
+            'top_products':         top_products_data,
             'recent_orders':        OrderSerializer(recent_orders, many=True).data,
         })

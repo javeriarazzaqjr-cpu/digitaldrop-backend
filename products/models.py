@@ -34,6 +34,7 @@ class Product(models.Model):
     badge = models.CharField(max_length=20, choices=BADGE_CHOICES, blank=True, default='')
     tags        = models.CharField(max_length=300, blank=True)
     sales_count = models.PositiveIntegerField(default=0)
+    view_count  = models.PositiveIntegerField(default=0)
     is_active   = models.BooleanField(default=True)
     created_at  = models.DateTimeField(auto_now_add=True)
     updated_at  = models.DateTimeField(auto_now=True)
