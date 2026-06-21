@@ -134,3 +134,13 @@ DEFAULT_FROM_EMAIL  = config('EMAIL_HOST_USER', default='noreply@digitaldrop.com
 RESEND_API_KEY = config('RESEND_API_KEY', default='')
 
 BREVO_API_KEY = config('BREVO_API_KEY', default='')
+
+
+# ── PRODUCTION SECURITY ──
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
