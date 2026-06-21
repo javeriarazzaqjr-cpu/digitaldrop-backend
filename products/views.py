@@ -45,6 +45,9 @@ class ProductCreateView(generics.CreateAPIView):
     parser_classes     = [MultiPartParser, FormParser, JSONParser]
 
     def perform_create(self, serializer):
+        if self.request.user.role not in ('seller', 'both'):
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied('Only sellers can add products. Update your account role in your profile to start selling.')
         serializer.save(seller=self.request.user)
 
 
